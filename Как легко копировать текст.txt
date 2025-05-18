@@ -1,0 +1,59 @@
+Как копировать текст?
+
+Вариант 1 - OCR.space
+
+1. pip install requests pillow
+
+2. from PIL import Image
+import io, requests
+
+# Укажи путь к файлу
+image_path = "/home/live/PycharmProjects/pythonProject/image.png"
+
+# Открытие файла
+with open(image_path, "rb") as f:
+    img_bytes = f.read()
+buf = io.BytesIO(img_bytes)
+
+# Запрос в OCR.space
+api_url = 'https://api.ocr.space/parse/image'
+payload = {
+    'apikey': 'helloworld',  # можно бесплатно заменить на свой ключ
+    'language': 'rus',
+}
+files = {'image.png': buf}
+resp = requests.post(api_url, data=payload, files=files)
+result = resp.json()
+
+# Вывод результата
+parsed = result.get('ParsedResults')
+if parsed:
+    text = parsed[0].get('ParsedText', '')
+    print("Текст на изображении:\n", text)
+else:
+    print("Ошибка:", result)
+
+
+Делаете скриншот области и копируете адрес. Потом вставляете в код.
+
+
+Вариант 2 - EasyOCR
+
+1. pip install easyocr pillow
+
+2. pip install torch torchvision
+
+3. from PIL import Image
+import easyocr
+
+# Укажи путь к изображению
+image_path = "/home/live/PycharmProjects/pythonProject/image.png"
+
+# OCR
+reader = easyocr.Reader(['ru', 'en'], gpu=False)  # GPU False — если нет CUDA
+result = reader.readtext(image_path, detail=0)
+
+# Вывод
+print("Распознанный текст:\n", "\n".join(result))
+
+
